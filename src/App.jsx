@@ -6,12 +6,11 @@ function App() {
 
   return (
     <>
-      {/* <Router>
+      <Router>
         <Routes>
-        <Route path="/video" element={<Highlight />} />
+          <Route path="/match/:title" element={<Highlight />} />
         </Routes>
-      </Router> */}
-      <Highlight/>
+      </Router>
     </>
   )
 }

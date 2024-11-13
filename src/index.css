@@ -4,6 +4,32 @@ body {
   padding: 0;
   margin: 0;
 }
+
+body {
+  /* border: 1px solid red; */
+  height: 100vh;
+}
+
 video {
   width: 90vw;
+}
+
+.title {
+  margin-top: 40px;
+  margin-left: 10px;
+}
+.league {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.fullscreen-btn {
+  display: block;  /* Show button by default */
+}
+
+/* Hide the button on screens wider than 500px */
+@media (min-width: 500px) {
+  .fullscreen-btn {
+    display: none;  /* Hide the button */
+  }
 }

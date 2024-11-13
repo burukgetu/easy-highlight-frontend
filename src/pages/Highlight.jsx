@@ -1,90 +1,139 @@
 // src/VideoPlayer.js
 import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
-// import { useParams } from 'react-router-dom';
+import { Maximize, Shrink } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const Highlight = () => {
-  // const { videoId } = useParams(); // Get videoId from URL params
-  const videoSrc = `https://hls.upfootvid.com/upfiles/source/hls/51/291545/manifest/0.m3u8?token=T0kzVUYxVFpKcmR6WThvY0FFOURpQXpRVkJ4WTR5SWVuZHVQTHR5bGxyUT06VXBGaWxlcy8yMDI0LzExLzEwLzUxLzI5MTU0NS8wLm0zdTg6aHR0cHMlM0ElMkYlMkZobHMudXBmb290dmlkLmNvbSUyRjo2Mzg2NzAzNjkxOTc5NTM3Nzc=&keypair=cmVyazE4dldoS01KaEd6ZjRSand1N1VXV1dJY1I2eUE4c2NLQlNRZlI1dz06VXBGaWxlcy8yMDI0LzExLzEwLzUxLzI5MTU0NS86aHR0cHMlM0ElMkYlMkZobHMudXBmb290dmlkLmNvbSUyRjo2Mzg2NzAzNjkxOTc5NTM3Nzc=`; // Replace with actual video source
-  
-  const videoRef = useRef(null); // Reference to video element
-  const [controlsVisible, setControlsVisible] = useState(true); // Track visibility of controls
+  const { title } = useParams();
+  const id = '673513cbced6d78cb22e00c0';
+  const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Set up the HLS player and handle video playback
+  const [match, setMatch] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [videoSrc, setVideoSrc] = useState(null);
+
+  const videoRef = useRef(null);
+  const [isInnerFullScreen, setIsInnerFullScreen] = useState(false);
+
   useEffect(() => {
-    const video = videoRef.current;
-
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoSrc;
-    } else if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(videoSrc);
-      hls.attachMedia(video);
-    } else {
-      alert('Your browser does not support HLS playback.');
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.destroy();
+    const fetchMatch = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/match/${id}/${title}`);
+        const item = response.data;
+        setMatch(item)
+        console.log(match)
+        setVideoSrc(item.vidSrc); // Set the video source from the matched item
+      } catch (error) {
+        setError('Error fetching the match', error);
+      } finally {
+        setLoading(false);
       }
     };
+
+    fetchMatch();
+  }, [id, title]);
+
+  useEffect(() => {
+    if (videoSrc && videoRef.current) {
+      const video = videoRef.current;
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+
+        return () => {
+          hls.destroy();
+        };
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+      } else {
+        alert('Your browser does not support HLS playback.');
+      }
+    }
   }, [videoSrc]);
 
-  // Handle double-tap (double-click) to skip 5 seconds
-  const handleDoubleClick = (e) => {
-    const video = videoRef.current;
-    if (video) {
-      const skipTime = 5;
-      const rect = video.getBoundingClientRect();
-      const isLeftSide = e.clientX < rect.left + rect.width / 2; // Detect if double-tapped on the left side
-      if (isLeftSide) {
-        video.currentTime -= skipTime; // Skip backward by 5 seconds
-      } else {
-        video.currentTime += skipTime; // Skip forward by 5 seconds
-      }
-      setControlsVisible(true); // Ensure controls appear when the user interacts
-    }
+  const toggleInnerFullScreen = () => {
+    setIsInnerFullScreen(!isInnerFullScreen);
   };
 
-  // Hide controls after 3 seconds of inactivity
-  const hideControls = () => {
-    setControlsVisible(false);
-  };
-
-  // Reset the hide controls timer every time the user interacts with the video
-  const resetHideTimer = () => {
-    if (controlsVisible) return; // Don't reset if controls are already visible
-    setControlsVisible(true);
-    setTimeout(hideControls, 3000); // Set a timeout to hide controls after 3 seconds
-  };
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div
-      id="player-container"
-      style={{
-        position: 'relative',
-        maxWidth: '100%',
-        margin: 'auto',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-      onClick={resetHideTimer} // Reset the timer on video click
-    >
-      <video
-        ref={videoRef}
-        controls={controlsVisible} // Show/hide controls dynamically
-        onDoubleClick={handleDoubleClick} // Double-click to skip forward or backward
-        onPlay={resetHideTimer} // Reset controls visibility on play
-        onPause={resetHideTimer} // Reset controls visibility on pause
-        style={{ width: '100%', height: 'auto' }}
+    <>
+      <div
+        id="player-container"
+        style={{
+          position: 'relative',
+          width: isInnerFullScreen ? '100vw' : '100%',
+          height: isInnerFullScreen ? '100vh' : 'auto',
+          maxWidth: '100%',
+          margin: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+          backgroundColor: isInnerFullScreen ? 'black' : 'transparent',
+        }}
       >
-        Your browser does not support the video element.
-      </video>
-    </div>
+        <video
+          ref={videoRef}
+          controls
+          style={{
+            width: isInnerFullScreen ? '100vh' : '100%',
+            height: isInnerFullScreen ? '100vw' : '100%',
+            transform: isInnerFullScreen ? 'rotate(90deg)' : 'none',
+            objectFit: 'fill',
+            transition: 'width 0.3s, height 0.3s, transform 0.3s',
+          }}
+        >
+          Your browser does not support the video element.
+        </video>
+      </div>
+      <button
+        onClick={toggleInnerFullScreen}
+        style={{
+          position: 'absolute',
+          padding: '10px 20px',
+          fontSize: '10px',
+          cursor: 'pointer',
+          background: 'none',
+          color: isInnerFullScreen ? 'white' : 'black',
+          border: 'none',
+          zIndex: 10,
+        }}
+        className="fullscreen-btn"
+      >
+        {isInnerFullScreen ? (
+          <div style={{ 
+            display: 'flex',
+            gap: '5px',
+            alignItems: 'center', 
+            transform: 'translateY(-50px)',
+            color: 'white'
+          }}>
+            <Shrink style={{ marginRight: '10px' }} />
+            <p>Exit FullScreen</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '5px', alignItems: 'center', marginTop: '8px' }}>
+            <Maximize size={17} />
+            <p>Fullscreen</p>
+          </div>
+        )}
+      </button>
+      {/* <div style={{ backgroundColor: 'black', width: '100%', height: '2px', marginTop: "20px" }}></div> */}
+      {match && (
+        <>
+          <h1 className='title'>{match.title.replace(/_/g, ' ')}</h1>
+          <h2 className='league'>{match.leagueType.replace(/_/g, ' ')}</h2>
+        </>
+      )}
+    </>
   );
 };
 
