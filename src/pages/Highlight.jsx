@@ -48,7 +48,8 @@ const Highlight = () => {
         console.log(formattedDate)
         setVideoSrc(item.url); // Set the video source from the matched item
       } catch (error) {
-        setError('Error fetching the match', error);
+        setError('Please Try Again', error);
+        window.location.reload();
       } finally {
         setLoading(false);
       }
