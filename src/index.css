@@ -3,33 +3,90 @@ html,
 body {
   padding: 0;
   margin: 0;
+  font-family: "Funnel Display", sans-serif;
+  overflow-x: hidden;
 }
 
 body {
   /* border: 1px solid red; */
   height: 100vh;
+  background-color: rgb(235, 235, 235);
 }
 
 video {
   width: 90vw;
 }
 
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  /* border: 1px solid red; */
+}
+
+.date {
+  margin-top: 1px;
+  margin-right: 20px;
+  text-align: end;
+  font-weight:100;
+}
+
 .title {
   margin-top: 40px;
-  margin-left: 10px;
+  /* border: 1px solid red; */
+  width: 90%;
 }
+
+.league-list {
+  display: inline;
+  width: 90vw;
+  /* border: 1px solid red; */
+}
+
 .league {
   margin-top: 10px;
   margin-left: 10px;
+  font-weight:400;
+  font-size: 20px;
+  background-color: rgb(243, 100, 100);
+  width: fit-content;
+  padding: 5px;
+  border-radius: 10px;
+  color: rgb(37, 37, 36);
 }
 
 .fullscreen-btn {
   display: block;  /* Show button by default */
 }
 
+.anim {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Hide the button on screens wider than 500px */
-@media (min-width: 500px) {
+@media (min-width: 750px) {
   .fullscreen-btn {
     display: none;  /* Hide the button */
+  }
+
+  .details {
+    
+  }
+
+  .title {
+    width: 60vw;
+  }
+
+  .league-list {
+    display: flex;
+    justify-content: center;
+  }
+
+  .video {
+    height: 100vh;
   }
 }
