@@ -45,13 +45,13 @@ video {
 }
 
 .league {
-  margin-top: 10px;
-  margin-left: 10px;
+  /* margin-top: 10px;
+  margin-left: 10px; */
   font-weight:400;
   font-size: 20px;
   background-color: rgb(243, 100, 100);
   width: fit-content;
-  padding: 5px;
+  padding: 10px;
   border-radius: 10px;
   color: rgb(37, 37, 36);
 }
@@ -67,14 +67,27 @@ video {
   align-items: center;
 }
 
+.qua-list {
+  padding: 1vw;
+}
+
+.qua {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 /* Hide the button on screens wider than 500px */
 @media (min-width: 750px) {
   .fullscreen-btn {
     display: none;  /* Hide the button */
   }
 
-  .details {
-    
+  .qua-list {
+    padding-left: 20vw;
+    padding-top: 10px;
   }
 
   .title {
@@ -84,9 +97,16 @@ video {
   .league-list {
     display: flex;
     justify-content: center;
+    gap: 20px;
   }
 
   .video {
     height: 100vh;
+  }
+
+  .qua-list {
+    display: flex;
+    gap: 5px;
+    align-items: center;
   }
 }
