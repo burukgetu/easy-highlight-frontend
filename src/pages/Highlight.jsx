@@ -19,7 +19,7 @@ const Highlight = () => {
   const [videoSrc, setVideoSrc] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [date, setDate] = useState(false);
-  const [is720, setIs720] = useState(true);
+  const [is720, setIs720] = useState(false);
 
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
