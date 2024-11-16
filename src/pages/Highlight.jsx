@@ -48,7 +48,7 @@ const Highlight = () => {
         const formattedDate = `${day}/${month}/${year}`;
         setDate(formattedDate);
         console.log(item)
-        setVideoSrc(item.vidSrc); // Set the video source from the matched item
+        setVideoSrc(item.vidSrc.replace("http","https")); // Set the video source from the matched item
       } catch (error) {
         setError('Please Try Again', error);
         window.location.reload();
